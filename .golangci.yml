@@ -1,0 +1,36 @@
+version: "2"
+
+formatters:
+  enable:
+    - gofmt
+    - gofumpt
+    - goimports
+    - golines
+
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/irumako/loglint
+
+    golines:
+      max-len: 120
+
+linters:
+  default: all
+  disable:
+    - wsl
+    - depguard
+    - exhaustive
+    - exhaustruct
+    - lll
+    - nilnil
+    - noinlineerr
+    - nonamedreturns
+    - paralleltest
+    - rowserrcheck
+    - sqlclosecheck
+    - varnamelen
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
