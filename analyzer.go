@@ -17,6 +17,15 @@ func NewAnalyzer() *analysis.Analyzer {
 	}
 }
 
+type ruleFunc func(pass *analysis.Pass, expr ast.Expr)
+
+var messageRules = []ruleFunc{
+	checkLowercaseFirstLetter,
+	checkEnglishOnly,
+	checkSpecialSymbolAndEmoji,
+	checkSensitiveData,
+}
+
 func run(pass *analysis.Pass) (any, error) {
 	for _, file := range pass.Files {
 		ast.Inspect(file, func(node ast.Node) bool {
@@ -40,11 +49,9 @@ func run(pass *analysis.Pass) (any, error) {
 			}
 
 			msgExpr := call.Args[pos]
-
-			// Правила
-			checkLowercaseFirstLetter(pass, msgExpr)
-			checkEnglishOnly(pass, msgExpr)
-			checkSpecialSymbolAndEmoji(pass, msgExpr)
+			for _, rule := range messageRules {
+				rule(pass, msgExpr)
+			}
 
 			return true
 		})

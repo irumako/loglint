@@ -1,6 +1,11 @@
 package loglint
 
-import "unicode"
+import (
+	"go/ast"
+	"go/token"
+	"strconv"
+	"unicode"
+)
 
 func isEmoji(r rune) bool {
 	switch {
@@ -17,4 +22,18 @@ func isEmoji(r rune) bool {
 
 func isSpecialSymbol(r rune) bool {
 	return unicode.IsSymbol(r) || unicode.IsPunct(r)
+}
+
+func getStringLiteralValue(expr ast.Expr) (string, bool) {
+	lit, ok := expr.(*ast.BasicLit)
+	if !ok || lit.Kind != token.STRING {
+		return "", false
+	}
+
+	value, err := strconv.Unquote(lit.Value)
+	if err != nil {
+		return "", false
+	}
+
+	return value, true
 }

@@ -228,6 +228,69 @@ func TestCheckSpecialSymbolAndEmoji(t *testing.T) {
 	}
 }
 
+func TestCheckSensitiveData(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		expr     ast.Expr
+		wantMsgs []string
+	}{
+		{
+			name:     "safe string literal",
+			expr:     mustParseExpr(t, `"user signed in"`),
+			wantMsgs: nil,
+		},
+		{
+			name:     "contains password keyword",
+			expr:     mustParseExpr(t, `"password check failed"`),
+			wantMsgs: []string{"message may contain potentially sensitive data"},
+		},
+		{
+			name:     "contains mixed case token keyword",
+			expr:     mustParseExpr(t, `"Bearer Token missing"`),
+			wantMsgs: []string{"message may contain potentially sensitive data"},
+		},
+		{
+			name:     "contains api key keyword",
+			expr:     mustParseExpr(t, `"api key is invalid"`),
+			wantMsgs: []string{"message may contain potentially sensitive data"},
+		},
+		{
+			name:     "non basic literal expression",
+			expr:     mustParseExpr(t, `msg`),
+			wantMsgs: []string{"message may contain potentially sensitive data"},
+		},
+		{
+			name:     "basic literal but not string",
+			expr:     mustParseExpr(t, `123`),
+			wantMsgs: []string{"message may contain potentially sensitive data"},
+		},
+		{
+			name:     "invalid quoted string",
+			expr:     &ast.BasicLit{Kind: token.STRING, Value: `"unterminated`},
+			wantMsgs: []string{"message may contain potentially sensitive data"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := runSensitiveDataCheck(tt.expr)
+			if len(got) != len(tt.wantMsgs) {
+				t.Fatalf("got %d diagnostics, want %d: %#v", len(got), len(tt.wantMsgs), got)
+			}
+
+			for i, want := range tt.wantMsgs {
+				if got[i].Message != want {
+					t.Fatalf("diagnostic %d message = %q, want %q", i, got[i].Message, want)
+				}
+			}
+		})
+	}
+}
+
 func runLowercaseFirstLetterCheck(expr ast.Expr) []analysis.Diagnostic {
 	diags := make([]analysis.Diagnostic, 0, 1)
 	pass := &analysis.Pass{
@@ -263,6 +326,19 @@ func runSpecialSymbolAndEmojiCheck(expr ast.Expr) []analysis.Diagnostic {
 	}
 
 	checkSpecialSymbolAndEmoji(pass, expr)
+
+	return diags
+}
+
+func runSensitiveDataCheck(expr ast.Expr) []analysis.Diagnostic {
+	diags := make([]analysis.Diagnostic, 0, 1)
+	pass := &analysis.Pass{
+		Report: func(d analysis.Diagnostic) {
+			diags = append(diags, d)
+		},
+	}
+
+	checkSensitiveData(pass, expr)
 
 	return diags
 }
