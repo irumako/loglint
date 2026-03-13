@@ -30,6 +30,9 @@ linters:
     - rowserrcheck
     - sqlclosecheck
     - varnamelen
+    - gochecknoglobals
+    - testpackage
+    - funlen
 
 issues:
   max-issues-per-linter: 0
