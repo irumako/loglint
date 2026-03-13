@@ -40,7 +40,10 @@ func run(pass *analysis.Pass) (any, error) {
 			}
 
 			msgExpr := call.Args[pos]
+
+			// Правила
 			checkLowercaseFirstLetter(pass, msgExpr)
+			checkEnglishOnly(pass, msgExpr)
 
 			return true
 		})

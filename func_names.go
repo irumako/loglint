@@ -10,7 +10,7 @@ const (
 
 // Поддерживаемые логгеры:
 // log/slog;
-// go.uber.org/zap
+// go.uber.org/zap.
 var messageArgPosByFunction = map[string]argPos{
 	// log/slog
 	"log/slog.Debug":                  firstArg,
