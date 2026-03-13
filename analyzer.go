@@ -44,6 +44,7 @@ func run(pass *analysis.Pass) (any, error) {
 			// Правила
 			checkLowercaseFirstLetter(pass, msgExpr)
 			checkEnglishOnly(pass, msgExpr)
+			checkSpecialSymbolAndEmoji(pass, msgExpr)
 
 			return true
 		})
