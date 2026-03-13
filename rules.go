@@ -50,3 +50,24 @@ func checkEnglishOnly(pass *analysis.Pass, expr ast.Expr) {
 		}
 	}
 }
+
+// Проверяет, что лог-сообщения не содержат спецсимволы или эмодзи.
+func checkSpecialSymbolAndEmoji(pass *analysis.Pass, expr ast.Expr) {
+	lit, ok := expr.(*ast.BasicLit)
+	if !ok || lit.Kind != token.STRING {
+		return
+	}
+
+	value, err := strconv.Unquote(lit.Value)
+	if err != nil || value == "" {
+		return
+	}
+
+	for _, r := range value {
+		if isSpecialSymbol(r) || isEmoji(r) {
+			pass.Reportf(expr.Pos(), "message should not contain special symbols or emojis")
+
+			return
+		}
+	}
+}
