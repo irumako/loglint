@@ -12,7 +12,7 @@ GOIMPORTS := $(LOCAL_BIN)/goimports$(EXEEXT)
 GOLINES := $(LOCAL_BIN)/golines$(EXEEXT)
 LOGLINT := $(LOCAL_BIN)/loglint$(EXEEXT)
 
-.PHONY: build deps lint linter format clean test
+.PHONY: build deps lint linter format test custom
 
 build:
 	go build -o $(LOGLINT) ./cmd/loglint
@@ -35,3 +35,6 @@ format:
 
 test:
 	go test -v -cover ./...
+
+custom:
+	$(GOLANGCI_LINT) custom
