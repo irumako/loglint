@@ -3,4 +3,4 @@ version: v2.11.3
 plugins:
   - module: github.com/irumako/loglint
     import: github.com/irumako/loglint/plugin
-    version: v0.1.0
+    version: v0.2.0
