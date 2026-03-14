@@ -1,5 +1,7 @@
 # loglint
 
+[![CI](https://github.com/irumako/loglint/actions/workflows/ci.yml/badge.svg)](https://github.com/irumako/loglint/actions/workflows/ci.yml)
+
 ## Линтер для проверки лог-записей.
 
 ### Тестовое задание по направлению «Backend-разработка. Golang»
