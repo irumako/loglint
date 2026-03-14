@@ -1,0 +1,7 @@
+# loglint configuration
+# Available rule IDs:
+# - lowercase-first-letter
+# - english-only
+# - special-symbols
+# - sensitive-data
+disabledRules: []

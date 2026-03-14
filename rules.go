@@ -9,7 +9,20 @@ import (
 	"golang.org/x/tools/go/analysis"
 )
 
-// Проверяет, что лог-сообщения начинаются со строчной буквы.
+type ruleFunc func(pass *analysis.Pass, expr ast.Expr)
+
+type rule struct {
+	id    string
+	check ruleFunc
+}
+
+var allRules = []rule{
+	{id: "lowercase-first-letter", check: checkLowercaseFirstLetter},
+	{id: "english-only", check: checkEnglishOnly},
+	{id: "special-symbols", check: checkSpecialSymbolAndEmoji},
+	{id: "sensitive-data", check: checkSensitiveData},
+}
+
 func checkLowercaseFirstLetter(pass *analysis.Pass, expr ast.Expr) {
 	value, ok := getStringLiteralValue(expr)
 	if !ok || value == "" {
@@ -24,7 +37,6 @@ func checkLowercaseFirstLetter(pass *analysis.Pass, expr ast.Expr) {
 	pass.Reportf(expr.Pos(), "message must start with a lowercase letter")
 }
 
-// Проверяет, что лог-сообщения только на английском языке.
 func checkEnglishOnly(pass *analysis.Pass, expr ast.Expr) {
 	value, ok := getStringLiteralValue(expr)
 	if !ok || value == "" {
@@ -40,7 +52,6 @@ func checkEnglishOnly(pass *analysis.Pass, expr ast.Expr) {
 	}
 }
 
-// Проверяет, что лог-сообщения не содержат спецсимволы или эмодзи.
 func checkSpecialSymbolAndEmoji(pass *analysis.Pass, expr ast.Expr) {
 	value, ok := getStringLiteralValue(expr)
 	if !ok || value == "" {
@@ -56,7 +67,6 @@ func checkSpecialSymbolAndEmoji(pass *analysis.Pass, expr ast.Expr) {
 	}
 }
 
-// Проверяет, что лог-сообщения не содержат чувствительные данные.
 func checkSensitiveData(pass *analysis.Pass, expr ast.Expr) {
 	value, ok := getStringLiteralValue(expr)
 	if !ok {
